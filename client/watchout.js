@@ -1,6 +1,6 @@
 // start slingin' some d3 here.
 (function() {
-  
+
   var gameOptions = {
     height: 900,
     width: 1200,
@@ -32,7 +32,29 @@
     });
   };
 
-  console.log(createEnemies());
+  var drag = d3.drag()
+    // .origin(function(d) { return d; })
+    .on('start', dragstarted)
+    .on('drag', dragged)
+    .on('end', dragend);
+
+  var dragstarted = function(d) {
+    d3.event.sourceEvent.stopPropagation();
+    d3.select(this).classed('dragging', true);
+  }; 
+
+  var dragged = function(d) {
+    d3.select(this)
+      .attr('cx', d3.event.x)
+      .attr('cy', d3.event.y);
+  }; 
+
+  var dragend = function(d) {
+    d3.event.sourceEvent.stopPropagation();
+    d3.select(this).classed('dragging', false);
+  }; 
+
+
 
   var update = function(data) {
 
@@ -55,6 +77,7 @@
           //.style('fill', function(d) { return d.color; })
           .attr('x', function(d) { return d.x; })
           .attr('y', function(d) { return d.y; });
+
 
     //Update the things currently on the board
     update.transition().duration(1000)
@@ -79,16 +102,23 @@
     .attr('cx', gameOptions.width / 2)
     .attr('cy', gameOptions.height / 2);
 
-  d3.select('body .board')
-    .on('mousemove', function() {
+  d3.select('body .board svg .mouse').call(d3.drag().on('start', dragstarted)
+                                                    .on('drag', dragged)
+                                                    .on('end', dragend));
 
-      var mouseCoordinates = d3.mouse(this);
+  // Below is event listener for if player icon should ALWAYS follow mouse,
+  //instead of just on a drag
+  
+  // d3.select('body .board')
+  //   .on('mousemove', function() {
 
-      d3.select('body .board svg .mouse')
-        .attr('cx', mouseCoordinates[0])
-        .attr('cy', mouseCoordinates[1]);
+  //     var mouseCoordinates = d3.mouse(this);
 
-    });
+  //     d3.select('body .board svg .mouse')
+  //       .attr('cx', mouseCoordinates[0])
+  //       .attr('cy', mouseCoordinates[1]);
+
+  //   });
 
   var collisionCounter = function() {
     var collisionCount = d3.select('.scoreboard .collisions span');
@@ -99,14 +129,13 @@
   var checkOverlap = function() {
 
 
-    var enemies = d3.select('body .board svg').selectAll('image.enemy')[0];
-    var player = d3.select('body .board svg').select('circle.mouse')[0][0];
+    var enemies = d3.select('body .board svg').selectAll('image.enemy')._groups[0];
+    var player = d3.select('body .board svg').select('circle.mouse')._groups[0][0];
     var score = d3.select('.scoreboard .current span');
     var highScore = d3.select('.scoreboard .highscore span');
     var bool = false;
 
     enemies.forEach(function(oneEnemy) {
-      //console.log(oneEnemy.cx.animVal.value, oneEnemy.cy);
       if (Math.abs(oneEnemy.x.animVal.value - player.cx.animVal.value) < 10 
           && Math.abs(oneEnemy.y.animVal.value - player.cy.animVal.value) < 10) {
         bool = true;
@@ -119,7 +148,6 @@
       }
       score.text(0);
       gameOptions.score = 0;
-      // collisionCount.text(+collisionCount.text() + 1);
       slowCollisionCounter();
     } else {
       gameOptions.score++;
@@ -133,6 +161,7 @@
     .on('mouseover', function() {
       setInterval(checkOverlap, 50);
     });
+
 
 
 })();
