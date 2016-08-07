@@ -2,6 +2,10 @@
   "name": "watchout",
   "version": "1.0.1",
   "description": "Asteroids-style game implemented using D3.js",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.4.8"
+  },
   "main": "client/index.html",
   "scripts": {
     "test": "echo 'Error: no test specified'",

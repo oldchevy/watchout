@@ -20,5 +20,24 @@
 
 <!--     <script src="lib/d3.js" charset="utf-8"></script> -->
     <script src='watchout.js'></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      socket.on('connec', function() {
+        console.log('were seeing this client-side  now');
+        d3.select('.scoreboard').append('div').text('A new Player!!').style({
+          color: 'white'
+        });
+      });
+      // $('form').submit(function(){
+      //   socket.emit('chat message', $('#m').val());
+      //   $('#m').val('');
+      //   return false;
+      // });
+      // socket.on('chat message', function(msg){
+      //   $('#messages').append($('<li>').text(msg));
+      // });
+
+    </script>
   </body>
 </html>
